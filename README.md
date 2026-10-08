@@ -1,5 +1,24 @@
 # Manoo · manos para DeepSeek Harness
 
+## 中文说明 · Chinese · 中文
+
+Manoo 给 DeepSeek Harness 一双手：它能看你的屏幕、移动鼠标、替你打字，而且是
+**当着你的面**做，一边做一边念给你听。它是为**不太会用电脑的人**做的，
+界面有**中文**（状态栏 声音 / 光标 / 分屏 / 缩放 / 暂停、权限询问、声音朗读）。
+
+**这个仓库只是连接器**，不含 Manoo 程序本身；程序在
+https://manoo-deepseek.corporacionjamiel.workers.dev/ 单独下载（有免费额度）。
+
+```bash
+dsh plugin --profile web add manoo-manos   # 装连接器
+node instalar.mjs                          # 告诉它 Manoo 装在哪里
+```
+
+完整中文说明：[README.zh.md](README.zh.md)
+
+---
+
+
 **Manoo le da manos a DeepSeek**: ve tu pantalla, mueve el mouse y escribe por ti.
 Le pides las cosas como se las pedirías a una persona —«abre el navegador y busca
 el clima», «enséñame dónde está el botón de guardar»— y lo hace delante de ti, con
