@@ -96,4 +96,10 @@ Hoy **solo macOS**. Windows y Linux están en el proyecto de la versión para Cl
 El conector es gratis y se puede compartir tal cual; el **programa Manoo es aparte**
 y tiene su propia licencia y precio. Ver [LICENSE](LICENSE).
 
+## Aviso
+
+Manoo es un producto independiente de **Corporación Jamiel**. **No está afiliado a
+DeepSeek AI ni a Anthropic**: «DeepSeek» y «Claude» son marcas de sus dueños y aquí
+se usan solo para decir con qué funciona.
+
 Hecho por **Jamiel García Velázquez** · © 2026
