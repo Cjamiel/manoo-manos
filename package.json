@@ -1,7 +1,7 @@
 {
   "name": "manoo-manos",
   "version": "0.1.0",
-  "description": "Manoo: manos para DeepSeek Harness — ve la pantalla, mueve el mouse y escribe por ti, con barra, aro para enseñar y voz. En español, para quien no sabe usar la computadora.",
+  "description": "Manoo: manos para DeepSeek Harness — ve la pantalla, mueve el mouse y escribe por ti, con barra, aro para enseñar y voz. En español, para quien no sabe usar la computadora. · 给 DeepSeek Harness 一双手：看屏幕、移动鼠标、替你打字，说中文。",
   "type": "module",
   "main": "index.mjs",
   "files": [
@@ -17,9 +17,7 @@
     "deepseek-harness",
     "computer-use",
     "espanol",
-    "accesibilidad",
-    "zh",
-    "chinese"
+    "accesibilidad"
   ],
   "dsh": {
     "bundle": {

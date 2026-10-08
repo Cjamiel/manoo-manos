@@ -11,6 +11,16 @@
 // ---------------------------------------------------------------------------
 
 import { existsSync } from 'node:fs';
+
+/** En qué idioma hablarle a la persona (español, chino o inglés). */
+const IDIOMA = (() => {
+  const l = (process.env.LC_ALL || process.env.LANG || Intl.DateTimeFormat().resolvedOptions().locale || 'en').toLowerCase();
+  if (l.startsWith('es')) return 'es';
+  if (l.startsWith('zh')) return 'zh';
+  return 'en';
+})();
+/** t(español, english, 中文) */
+const t = (es, en, zh) => (IDIOMA === 'zh' ? zh : IDIOMA === 'es' ? es : en);
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 
@@ -35,13 +45,23 @@ export function encontrarManoo() {
 export default function manooManos() {
   const ruta = encontrarManoo();
   if (!ruta) {
-    console.error(
+    console.error(t(
       'Manoo: no encontré la app.\n' +
-      '  1. Bájala en https://manoo.corporacionjamiel.workers.dev/ (hay prueba gratis)\n' +
+      '  1. Bájala en https://manoo-deepseek.corporacionjamiel.workers.dev/ (hay prueba gratis)\n' +
       '  2. Descomprímela en tu carpeta personal como «manoo»\n' +
       '  3. Corre:  node instalar.mjs\n' +
-      '  Si ya la tienes en otro lado:  MANOO_HOME=/ruta/a/manoo node instalar.mjs'
-    );
+      '  Si ya la tienes en otro lado:  MANOO_HOME=/ruta/a/manoo node instalar.mjs',
+      'Manoo: I could not find the app.\n' +
+      '  1. Download it from https://manoo-deepseek.corporacionjamiel.workers.dev/ (there is a free trial)\n' +
+      '  2. Unzip it into your home folder as “manoo”\n' +
+      '  3. Run:  node instalar.mjs\n' +
+      '  If it is somewhere else:  MANOO_HOME=/path/to/manoo node instalar.mjs',
+      'Manoo：我没找到程序。\n' +
+      '  1. 从 https://manoo-deepseek.corporacionjamiel.workers.dev/ 下载（有免费额度）\n' +
+      '  2. 解压到你的个人文件夹，命名成 manoo\n' +
+      '  3. 运行：node instalar.mjs\n' +
+      '  如果装在别处：MANOO_HOME=/你的/manoo node instalar.mjs'
+    ));
   }
   return {};
 }
