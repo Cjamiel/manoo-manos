@@ -10,7 +10,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { crearInterface } from 'node:readline/promises';
+import { createInterface } from 'node:readline/promises';
 import { encontrarManoo } from './index.mjs';
 
 /** En qué idioma hablarle a la persona (español, chino o inglés). */
@@ -43,7 +43,7 @@ console.log(t(`  Voy a escribir esa ruta en: ${PATCH}\n`, `  I will write that p
               `  我会把这个路径写进：${PATCH}\n`));
 
 if (!process.argv.includes('--si')) {
-  const rl = crearInterface({ input: process.stdin, output: process.stdout });
+  const rl = createInterface({ input: process.stdin, output: process.stdout });
   const respuesta = (await rl.question(t('  ¿Lo hago? (s/n) ', '  Do it? (y/n) ', '  要现在做吗？(s/n) '))).trim().toLowerCase();
   rl.close();
   if (respuesta !== 's' && respuesta !== 'si' && respuesta !== 'sí' && respuesta !== 'y') {
