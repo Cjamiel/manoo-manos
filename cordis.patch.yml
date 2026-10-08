@@ -1,0 +1,19 @@
+# Manoo · conectar el servidor MCP con DeepSeek Harness
+# ---------------------------------------------------------------------------
+# Las herramientas aparecen en el modelo como mcp__manoo__<herramienta>
+# (por ejemplo mcp__manoo__leer_texto).
+#
+# La ruta la escribe sola el instalador (node instalar.mjs) con la ubicación
+# real de tu copia de Manoo. Si la mueves de lugar, vuelve a correrlo.
+# ---------------------------------------------------------------------------
+- insert:
+    - id: mcp-manoo
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        serverName: manoo
+        transport: stdio
+        command: node
+        args: ['__MANOO_MCP__']
+        # Manoo puede tardar (divide la pantalla, espera a que cargue una página,
+        # espera el clic de la persona): el tope por omisión de 60 s se queda corto.
+        toolCallTimeoutMs: 180000

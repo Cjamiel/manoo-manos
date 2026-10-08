@@ -1,0 +1,16 @@
+{
+  "name": "manoo-manos",
+  "version": "0.1.0",
+  "description": "Manoo: manos para DeepSeek Harness — ve la pantalla, mueve el mouse y escribe por ti, con barra, aro para enseñar y voz. En español, para quien no sabe usar la computadora.",
+  "type": "module",
+  "main": "index.mjs",
+  "files": ["index.mjs", "cordis.patch.yml", "instalar.mjs", "README.md", "LICENSE", "captura.png"],
+  "keywords": ["dsh-plugin", "deepseek-harness", "computer-use", "espanol", "accesibilidad"],
+  "dsh": {
+    "bundle": { "patch": "./cordis.patch.yml" }
+  },
+  "scripts": { "postinstall": "node instalar.mjs --si" },
+  "license": "SEE LICENSE IN LICENSE",
+  "author": "Jamiel García Velázquez",
+  "homepage": "https://manoo.corporacionjamiel.workers.dev/"
+}

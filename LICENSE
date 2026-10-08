@@ -1,0 +1,20 @@
+Manoo · Licencia del conector
+Copyright (c) 2026 Jamiel García Velázquez. Todos los derechos reservados.
+
+Este paquete es el CONECTOR de Manoo para DeepSeek Harness: no contiene el
+programa Manoo, solo la forma de conectarlo.
+
+Se permite:
+  · Usarlo gratis, en tus computadoras, para lo que quieras.
+  · Copiarlo y compartirlo tal cual, sin modificarlo y con este archivo.
+
+No se permite:
+  · Venderlo, sublicenciarlo ni presentarlo como propio.
+  · Modificarlo para ocultar que es de Manoo.
+  · Copiar, extraer o reutilizar el programa Manoo (que se distribuye aparte,
+    con su propia licencia y su propio precio).
+
+El programa Manoo se vende en https://manoo.corporacionjamiel.workers.dev/ y su
+licencia de uso es aparte. Este conector no otorga ningún derecho sobre él.
+
+Se entrega tal cual, sin garantías.
