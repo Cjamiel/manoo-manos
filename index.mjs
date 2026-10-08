@@ -16,10 +16,16 @@ import { join } from 'node:path';
 
 /** Dónde suele estar la app de Manoo, y dónde se la puede pedir. */
 export const RUTAS = [
+  process.env.MANOO_HOME && join(process.env.MANOO_HOME, 'src', 'mcp.mjs'),
   process.env.MANOO_HOME && join(process.env.MANOO_HOME, 'app', 'src', 'mcp.mjs'),
+  // Tal como queda al instalar con el instalador (el zip se descomprime plano).
+  join(homedir(), 'manoo', 'src', 'mcp.mjs'),
+  join(homedir(), 'Documents', 'manoo', 'src', 'mcp.mjs'),
+  join(homedir(), 'Applications', 'manoo', 'src', 'mcp.mjs'),
+  // Y tal como queda cuando se trabaja desde el repo del proyecto.
   join(homedir(), 'manoo', 'app', 'src', 'mcp.mjs'),
-  join(homedir(), 'Documents', 'manoo', 'app', 'src', 'mcp.mjs'),
-  '/Applications/Manoo.app/Contents/Resources/app/src/mcp.mjs',
+  join(homedir(), 'Documents', 'manoo-deepseek', 'app', 'src', 'mcp.mjs'),
+  '/Applications/Manoo.app/Contents/Resources/src/mcp.mjs',
 ].filter(Boolean);
 
 export function encontrarManoo() {
