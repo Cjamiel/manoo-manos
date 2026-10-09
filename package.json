@@ -17,7 +17,10 @@
     "deepseek-harness",
     "computer-use",
     "espanol",
-    "accesibilidad"
+    "accesibilidad",
+    "screen-control",
+    "automation",
+    "assistant"
   ],
   "dsh": {
     "bundle": {
