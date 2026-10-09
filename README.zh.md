@@ -18,7 +18,8 @@
 这里**只有连接器**：它告诉 DeepSeek Harness 如何通过官方桥接
 `@deepseek-ai/dsh-mcp-client` 和 Manoo 说话。**它不包含 Manoo 程序本身。**
 
-程序在 **https://manoo-deepseek.corporacionjamiel.workers.dev/** 单独下载
+程序在 **https://manoo-deepseek.corporacionjamiel.workers.dev/**
+（如果打不开，用这个镜像：**https://cjamiel.github.io/manoo-manos/zh.html** — 在 China 更容易打开） 单独下载
 （每次会话 **免费 25 步操作**；Pro 不限量）。装在 Mac 上之后，这个连接器把它接到 harness 里。
 
 ## 安装（两步）
