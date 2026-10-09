@@ -39,6 +39,16 @@ export const RUTAS = [
 ].filter(Boolean);
 
 export function encontrarManoo() {
+  // Si la persona dice dónde está (MANOO_HOME), se respeta ESA ruta y nada más: así
+  // «MANOO_HOME=/no/existe» significa de verdad «aquí no hay Manoo» y no se cuela la
+  // copia instalada en la carpeta personal.
+  const dicho = process.env.MANOO_HOME;
+  if (dicho) {
+    const directo = existsSync(join(dicho, 'src', 'mcp.mjs'))
+      ? join(dicho, 'src', 'mcp.mjs')
+      : existsSync(join(dicho, 'mcp.mjs')) ? join(dicho, 'mcp.mjs') : null;
+    return directo;
+  }
   return RUTAS.find((r) => existsSync(r)) ?? null;
 }
 
