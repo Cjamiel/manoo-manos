@@ -73,9 +73,20 @@ fi
 # ── 2. Node ──────────────────────────────────────────────────────────────────
 titulo "$(t 'Node (lo que hace correr a Manoo)' 'Node (what runs Manoo)' "Node（Manoo 运行需要它）")"
 NODE_PROPIO=""
-if existe node && [ "$(node -v | sed 's/^v//' | cut -d. -f1)" -ge "$NODE_MIN" ] 2>/dev/null; then
+# Ojo: no basta con que exista «node». Si está en una carpeta personal, el Terminal de
+# la persona puede no verlo y Manoo no abriría. Solo se acepta si está en un lugar
+# estándar; si no, Manoo se lleva el suyo y así siempre funciona.
+RUTA_NODE="$(command -v node 2>/dev/null || true)"
+case "$RUTA_NODE" in
+  /usr/bin/node|/usr/local/bin/node|/opt/homebrew/bin/node) NODE_ESTANDAR=1 ;;
+  *) NODE_ESTANDAR=0 ;;
+esac
+if [ -n "$RUTA_NODE" ] && [ "$NODE_ESTANDAR" = 1 ] && [ "$(node -v | sed 's/^v//' | cut -d. -f1)" -ge "$NODE_MIN" ] 2>/dev/null; then
   bien "Node $(node -v)"
 else
+  if [ -n "$RUTA_NODE" ]; then
+    info "$(t "Tu Node está en una carpeta que el Terminal no siempre ve; dejo uno dentro de Manoo para que siempre abra." "Your Node lives in a folder Terminal does not always see; I will keep one inside Manoo so it always opens." "你现有的 Node 放在终端不一定能找到的位置；我在 Manoo 里放一份，保证一定能打开。")"
+  fi
   # Si no hay Node en el sistema, se baja el OFICIAL y se queda DENTRO de Manoo:
   # así nadie tiene que instalar nada ni tocar su Mac (ni Homebrew, ni permisos de
   # administrador). La licencia de Node (MIT) se guarda junto a él.
@@ -142,6 +153,9 @@ fi
 titulo "$(t 'Permisos que Manoo necesita' 'Permissions Manoo needs' "Manoo 需要的权限")"
 NODE_BIN="${NODE_PROPIO:-node}"
 DIAG="$(cd "$DESTINO" && "$NODE_BIN" src/manoo.mjs --info 2>/dev/null || true)"
+if printf '%s' "$DIAG" | grep -q "viene de"; then
+  LLAVE_HARNESS=1
+fi
 echo "$DIAG" | grep -q "✅ Accesibilidad" && bien "$(t 'Accesibilidad' 'Accessibility' '辅助功能')" \
   || { mal "$(t 'Accesibilidad (mover el mouse y escribir por ti)' 'Accessibility (to move the mouse and type for you)' "辅助功能（帮你移动鼠标、打字）")"; }
 echo "$DIAG" | grep -q "✅ Grabación de pantalla" && bien "$(t 'Grabación de pantalla' 'Screen Recording' '屏幕录制')" \
@@ -170,9 +184,11 @@ fi
 # ── 5. Tu llave de DeepSeek ──────────────────────────────────────────────────
 titulo "$(t 'Tu llave de DeepSeek' 'Your DeepSeek key' "你的 DeepSeek 密钥")"
 LLAVE="$HOME/.config/manoo/deepseek.key"
-if [ -s "$LLAVE" ]; then
-  bien "$(t 'Ya tienes una llave guardada.' 'You already have a saved key.' "你已经保存了密钥。")"
-else
+if [ "${LLAVE_HARNESS:-0}" = "1" ]; then
+  # Ya la encontró solo: la que usa DeepSeek Harness en esta máquina. No hay que pedir nada.
+  bien "$(t 'Ya encontré tu llave: es la que usa DeepSeek Harness en esta máquina.' 'I already found your key: the one DeepSeek Harness uses on this machine.' "我已经找到你的密钥：就是这台机器上 DeepSeek Harness 用的那个。")"
+elif [ -s "$LLAVE" ]; then
+  bien "$(t 'Ya tienes una llave guardada.' 'You already have a saved key.' "你已经保存了密钥。")" 
   info "$(t 'Es la que te da platform.deepseek.com (empieza con sk-) y es la que deja a Manoo pensar.' 'It is the one platform.deepseek.com gives you (starts with sk-) and it is what lets Manoo think.' "在 platform.deepseek.com 领取（以 sk- 开头），它让 Manoo 会思考。")"
   if preguntar "$(t '¿La pego ahora? (no se verá en pantalla mientras la escribes)' 'Paste it now? (it will not show on screen while you type it)' '现在就粘贴吗？（输入时屏幕上不会显示）')"; then
     printf '  %s%s%s' "$B" "$(t 'Pega la llave y presiona Enter: ' 'Paste the key and press Enter: ' '粘贴密钥后按回车：')" "$N" > /dev/tty
@@ -202,7 +218,7 @@ info "$(t 'Instala el conector desde el mercado de plugins (busca «Manoo»), o 
 info "dsh plugin --profile web add manoo-manos"
 printf '\n  %s%s%s\n' "$B" "$(t 'Tu plan' 'Your plan' "你的套餐")" "$N"
 info "$(t 'Gratis: 25 acciones por sesión. Pro (ilimitado): se activa con la llave que te llega al comprar.' 'Free: 25 actions per session. Pro (unlimited): activated with the key you get when you buy.' "免费：每次会话 25 步操作。Pro（不限量）：用购买后收到的密钥激活。")"
-printf '\n  %s\n' "$(t "Para ver el diagnóstico cuando quieras:  cd $DESTINO && node src/manoo.mjs --info" "To see the diagnosis anytime:  cd $DESTINO && node src/manoo.mjs --info" "想看诊断时：cd $DESTINO && node src/manoo.mjs --info")"
+printf '\n  %s\n' "$(t "Para ver el diagnóstico cuando quieras:  cd $DESTINO && ./node/bin/node src/manoo.mjs --info" "To see the diagnosis anytime:  cd $DESTINO && ./node/bin/node src/manoo.mjs --info" "想看诊断时：cd $DESTINO && ./node/bin/node src/manoo.mjs --info")"
 [ -n "$AVISOS" ] && printf '\n  %s%s%s\n%s\n' "$A" "$(t 'Quedó algo pendiente:' 'Something is still pending:' "还有几项没完成：")" "$N" "$AVISOS"
 printf '\n'
 exit 0
