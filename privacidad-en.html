@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Privacy Notice — Manoo</title>
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #0b0d10;
+    --bg-soft: #12151a;
+    --text: #e8ecf1;
+    --text-dim: #8b93a1;
+    --accent: #ff8a3d;
+    --border: #232830;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif; }
+  main { max-width: 42rem; margin: 0 auto; padding: 3rem 1.5rem 4rem; line-height: 1.6; }
+  a { color: var(--accent); }
+  h1 { font-size: 1.8rem; margin-bottom: 0.25rem; }
+  h2 { font-size: 1.15rem; margin-top: 2rem; color: var(--text); }
+  .meta { color: var(--text-dim); font-size: 0.9rem; margin-bottom: 2rem; }
+  .warn { background: var(--bg-soft); border: 1px solid var(--border); border-radius: 10px; padding: 0.9rem 1.1rem; font-size: 0.9rem; color: var(--text-dim); margin-bottom: 2rem; }
+  .back { display: inline-block; margin-bottom: 2rem; font-size: 0.9rem; }
+  ul { padding-left: 1.2rem; }
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="index.html">&larr; Back to Manoo</a>
+  <p class="meta" style="margin-bottom: 0.5rem;">Language: <strong>English</strong> · <a href="privacidad.html">Español</a></p>
+  <h1>Privacy Notice — Manoo</h1>
+  <p class="meta">
+    <strong>Responsible party:</strong> Jamiel García Velázquez, an individual (operating under the trade name "Corporación Jamiel," not yet registered as a legal entity), Av. Zumpango #23 A, Analco, Teoloyucan, State of Mexico.<br>
+    <strong>Contact:</strong> <a href="mailto:jamiel.garcia.velazquez@gmail.com">jamiel.garcia.velazquez@gmail.com</a><br>
+    <strong>Last updated:</strong> September 25, 2026
+  </p>
+
+  <div class="warn">⚠️ This is an English translation of the original Spanish document, provided for convenience. The Spanish version is the legally authoritative one — it is drafted under Mexico's Federal Law on Protection of Personal Data Held by Private Parties (LFPDPPP) — and governs in case of any conflict or ambiguity between the two. ⚠️ Initial draft based on that law.</div>
+
+  <h2>1. What data we collect</h2>
+  <p>Manoo, in its current version, <strong>does not send your screen, mouse, or keyboard data to any server of ours</strong>. All processing (screenshots, mouse/keyboard control, the Pro audit log) happens locally on your machine.</p>
+  <p>What Manoo sees or reads on your screen (screenshots and text) is handed to DeepSeek, the assistant you use (DeepSeek AI, with servers in China), the same as any file you show it in a conversation. That handling is governed by your Claude account and DeepSeek's privacy policy, not by Manoo.</p>
+  <p><strong>Exception: the Pro + Web plan (using Manoo from la API de DeepSeek in the browser).</strong> Only if you turn it on, la API de DeepSeek's requests and their responses —including screenshots— pass through our relay on Cloudflare to get from la API de DeepSeek to your computer. They pass <strong>in transit only: we don't store screenshots or a history of actions</strong>. To run the relay we keep your license email (to route requests to your computer) and la API de DeepSeek's access tokens, stored hashed. Every session needs your approval with a click on your computer, and you can disconnect at any time by closing Manoo or removing the connector in la API de DeepSeek.</p>
+  <p>The only personal data we collect and retain is, if you purchase a Pro license:</p>
+  <ul>
+    <li>Your email address (to issue and associate the license).</li>
+    <li>The license's issuance and expiration dates.</li>
+  </ul>
+  <p>We do not collect payment data directly — our payment processor (Stripe) handles your payment data under its own privacy notice. Your email address is also shared with our email delivery provider (Resend) solely to deliver your license, under its own privacy notice.</p>
+
+  <h2>2. Purpose of processing</h2>
+  <p>We use your email address only to issue and validate your Pro license, to contact you for support related to your license, and to notify you of significant changes to the product you purchased. We do not use your email for marketing without your explicit consent, nor do we share it with third parties beyond what is stated above.</p>
+
+  <h2>3. Data transfer</h2>
+  <p>We do not transfer your personal data to third parties, except where legally required or to the service providers named in section 1 (Stripe, Resend) and, only for the Pro + Web plan, Cloudflare, which runs the relay.</p>
+
+  <h2>4. Access, rectification, cancellation, and objection rights (ARCO)</h2>
+  <p>You have the right to Access, Rectify, Cancel, or Object (known in Mexico as "derechos ARCO") to the processing of your personal data. To exercise these rights, contact <a href="mailto:jamiel.garcia.velazquez@gmail.com">jamiel.garcia.velazquez@gmail.com</a> stating your request; you will receive a response within a reasonable time.</p>
+
+  <h2>5. Changes to this notice</h2>
+  <p>This notice may be updated as the product evolves. Any significant change will be announced in this document and, where applicable, within the product itself.</p>
+
+  <h2>6. Contact</h2>
+  <p><a href="mailto:jamiel.garcia.velazquez@gmail.com">jamiel.garcia.velazquez@gmail.com</a></p>
+    <p class="legal-note">Manoo no está afiliado a DeepSeek AI ni a Anthropic: son marcas de sus dueños. Manoo is not affiliated with DeepSeek AI or Anthropic: their names are trademarks of their owners.</p>
+  </main>
+</body>
+</html>

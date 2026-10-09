@@ -1,0 +1,2 @@
+Copia publicada de la página de Manoo (rama gh-pages, para GitHub Pages).
+Se genera desde manoo-deepseek/site. No editar a mano aquí.

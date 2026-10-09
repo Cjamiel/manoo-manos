@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manoo — 给 DeepSeek 一双手（macOS）</title>
+<meta name="description" content="Manoo 给 DeepSeek 一双手：它看你的屏幕、移动鼠标、替你打字，一边做一边念给你听。为不太会用电脑的人做的，说中文。macOS。">
+<meta property="og:title" content="Manoo — 给 DeepSeek 一双手">
+<meta property="og:description" content="你像吩咐一个人那样吩咐它。它当着你的面做，并念出每一步。">
+<meta property="og:url" content="https://manoo-deepseek.corporacionjamiel.workers.dev/zh.html">
+<meta property="og:image" content="https://manoo-deepseek.corporacionjamiel.workers.dev/assets/manoo-deepseek-anuncio-portada.png">
+<style>
+  :root { --tinta:#e8eef5; --suave:#9fb0c3; --cian:#5fe8ff; --fondo:#080d16; --caja:#0f1725; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--fondo); color:var(--tinta);
+         font:16px/1.7 -apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif; }
+  a { color:var(--cian); }
+  .env { max-width:900px; margin:0 auto; padding:28px 20px 60px; }
+  .barra { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+  .marca { font-weight:700; letter-spacing:.5px; }
+  .idiomas a { color:var(--suave); margin-left:12px; text-decoration:none; }
+  .idiomas a[aria-current] { color:var(--cian); font-weight:700; }
+  h1 { font-size:34px; line-height:1.25; margin:34px 0 12px; }
+  h2 { font-size:21px; margin:40px 0 10px; }
+  p { color:var(--tinta); }
+  .suave { color:var(--suave); }
+  .botones { display:flex; flex-wrap:wrap; gap:12px; margin:22px 0 8px; }
+  .btn { display:inline-block; padding:12px 20px; border-radius:10px; text-decoration:none;
+         background:var(--cian); color:#04121a; font-weight:700; }
+  .btn.sec { background:transparent; color:var(--cian); border:1px solid var(--cian); }
+  video { width:100%; border-radius:12px; margin-top:14px; background:#000; }
+  .caja { background:var(--caja); border:1px solid #1c2a3d; border-radius:12px; padding:6px 18px; margin:16px 0; }
+  code, pre { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:14px; }
+  pre { background:#0a1220; border:1px solid #1c2a3d; border-radius:10px; padding:12px 14px; overflow-x:auto; }
+  ul { padding-left:20px; }
+  .avi { color:var(--suave); font-size:14px; }
+  footer { border-top:1px solid #1c2a3d; margin-top:44px; padding-top:18px; color:var(--suave); font-size:13px; }
+</style>
+</head>
+<body>
+<div class="env">
+
+  <div class="barra">
+    <span class="marca">Manoo™ · 给 DeepSeek 的双手</span>
+    <span class="idiomas">
+      <a href="https://manoo.corporacionjamiel.workers.dev/claude">Claude</a>
+      <a href="./" >ES · EN</a>
+      <a href="zh.html" aria-current="page">中文</a>
+    </span>
+  </div>
+
+  <h1>DeepSeek，有了一双手。</h1>
+  <p>Manoo 给 DeepSeek 一双手：<strong>看你的屏幕、移动鼠标、替你打字</strong>。
+     你像吩咐一个人那样吩咐它——它就<strong>当着你的面</strong>做，一边做一边念给你听，
+     还用圆环指给你在哪里点。</p>
+  <p class="suave">它是为<strong>不太会用电脑的人</strong>做的：做完这一回，你还能学到点东西。</p>
+
+  <div class="botones">
+    <a class="btn" href="https://buy.stripe.com/14A28sbPZdLe2xR3Be1oI00">购买 Pro（一年）</a>
+    <a class="btn sec" href="#安装">免费试 25 步</a>
+  </div>
+
+  <h2>看它干活</h2>
+  <p class="suave">真实录屏：你让 DeepSeek 查天气，Manoo 当面做完，念出每一步，并用圆环指给你结果。</p>
+  <video controls playsinline preload="metadata"
+         poster="assets/manoo-deepseek-anuncio-portada.png">
+    <source src="assets/manoo-deepseek-anuncio-horizontal.mp4" type="video/mp4">
+  </video>
+
+
+  <h2>听听 Manoo 说中文</h2>
+  <p class="suave">它做事的时候，会这样一步一步念给你听（神经网络合成的声音，不是机器腔）：</p>
+  <audio controls preload="metadata" src="assets/manoo-habla-chino.mp3" style="width:100%; margin:10px 0"></audio>
+  <ol class="suave">
+    <li>我来帮你上网查一下。</li>
+    <li>先点上面的地址栏。</li>
+    <li>输入你想知道的：墨西哥城的天气。</li>
+    <li>然后开始搜索。</li>
+    <li>第一条结果在这里，我用光圈指给你看。</li>
+    <li>顺便帮你打开音乐。</li>
+    <li>好了。想学的话，我教你自己做。</li>
+  </ol>
+
+  <h2 id="安装">安装（三种方式）</h2>
+
+  <div class="caja">
+    <h3>1 · 装 Manoo 应用（不用装 Node）</h3>
+    <p class="suave">一行命令，它会自己检查、自己下载所需的一切（包括 Node，装在 Manoo 里面，不动你的系统）。</p>
+    <pre><code>curl -fsSL https://manoo-deepseek.corporacionjamiel.workers.dev/instalar.sh | bash</code></pre>
+    <p class="avi">需要 macOS，以及三个系统权限：辅助功能、屏幕录制、输入监控（最后一个就是紧急停止）。</p>
+    <p class="avi">想让 Manoo 的中文听起来更自然：<strong>系统设置 → 辅助功能 → 朗读内容 → 系统声音 → 管理声音</strong>，
+       下载一个带「<strong>增强</strong>」或「高级」的中文（普通话）声音。装好之后 Manoo 会自动用它，不用设置。</p>
+  </div>
+
+  <div class="caja">
+    <h3>2 · 用在 DeepSeek Harness 里</h3>
+    <p class="suave">在插件市场搜「Manoo」安装，或者：</p>
+    <pre><code>dsh plugin --profile web add manoo-manos</code></pre>
+  </div>
+
+  <div class="caja">
+    <h3>3 · 用在 Claude Code 里（可选）</h3>
+    <p class="suave">如果你已经在用 Claude Code，把它指向 DeepSeek 的 API 就行。这一条不是必需的。</p>
+  </div>
+
+  <h2>它不会做的事（写在代码里）</h2>
+  <ul>
+    <li><strong>绝不输入</strong>密码、PIN、卡号或验证码。</li>
+    <li><strong>绝不按最后一个按钮</strong>：付款、转账、签名、发布——它指给你，你自己按。</li>
+    <li><strong>不进</strong>银行、投资、加密货币、密码管理器和税务应用。</li>
+    <li><strong>你一碰鼠标或键盘，它立刻停下</strong>，并问你要不要继续。</li>
+    <li>第一次碰到某个应用时会先问你，圆环指在「允许」上。</li>
+  </ul>
+
+  <h2>价格</h2>
+  <p><strong>免费</strong>：每次会话 25 步操作，不用信用卡。<br>
+     <strong>Pro</strong>：不限量，$49 美元/年 或 $6/月。一份许可，
+     <strong>在 Claude 版和 DeepSeek 版都能用</strong>。</p>
+
+  <h2>隐私（说明白）</h2>
+  <p>Manoo 跑在你的电脑上，<strong>不给我们自己的服务器发任何东西</strong>。
+     Manoo 看到的内容（屏幕上的文字和截图）会送到 <strong>DeepSeek 的 API</strong>，
+     由它处理并<strong>保存在中国</strong>。</p>
+
+  <footer>
+    <p>
+      <a href="legal-zh.html">隐私声明与服务条款（中文）</a> ·
+      <a href="mailto:jamiel.garcia.velazquez@gmail.com">联系我们</a>
+    </p>
+    <p>Manoo by Corporación Jamiel<br>
+       Manoo 与 DeepSeek AI 和 Anthropic 都没有隶属关系：「DeepSeek」和「Claude」是各自所有者的商标。</p>
+    <p class="avi">目前只有 macOS。</p>
+  </footer>
+
+</div>
+</body>
+</html>

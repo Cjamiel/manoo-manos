@@ -1,0 +1,946 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Manoo — hands for DeepSeek</title>
+<meta name="description" content="Manoo gives DeepSeek hands: the finished Manoo app uses your computer — on macOS. (You can also point Claude Code at the DeepSeek API.) It does the tedious steps, narrates as it goes and leaves you only the sensitive ones. By Corporación Jamiel." />
+<link rel="icon" type="image/png" sizes="512x512" href="assets/favicon.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="assets/favicon-180.png" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://manoo-deepseek.corporacionjamiel.workers.dev/" />
+<meta property="og:title" content="Manoo — hands for DeepSeek" />
+<meta property="og:description" content="DeepSeek uses your computer, you keep control: Claude Code pointed at the DeepSeek API, on macOS." />
+<meta property="og:image" content="https://manoo-deepseek.corporacionjamiel.workers.dev/assets/manoo-deepseek-anuncio-portada.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Manoo — hands for DeepSeek" />
+<meta name="twitter:description" content="DeepSeek uses your computer, you keep control: Claude Code pointed at the DeepSeek API, on macOS." />
+<meta name="twitter:image" content="https://manoo-deepseek.corporacionjamiel.workers.dev/assets/manoo-deepseek-anuncio-portada.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #0a0d12;
+    --bg-deep: #060809;
+    --panel: #10151c;
+    --ink: #eef1f4;
+    --ink-dim: #8d99a6;
+    --ink-faint: #57626e;
+    --glow: #57e6ff;
+    --glow-soft: #57e6ff26;
+    --guide: #ffb454;
+    --guide-soft: #ffb45422;
+    --line: #1e252d;
+  }
+  * { box-sizing: border-box; }
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--glow);
+    outline-offset: 3px;
+  }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+  }
+  body {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 1.05rem;
+    line-height: 1.65;
+    min-height: 100vh;
+    background:
+      radial-gradient(ellipse 60% 45% at 82% -8%, #0d3a4a55, transparent 60%),
+      radial-gradient(ellipse 50% 35% at 8% 10%, #16202a66, transparent 65%),
+      var(--bg);
+  }
+  h1, h2, h3, .display {
+    font-family: "Space Grotesk", -apple-system, BlinkMacSystemFont, sans-serif;
+    letter-spacing: -0.01em;
+  }
+  main { max-width: 74rem; margin: 0 auto; padding: 0 1.5rem; }
+  section { padding: 5rem 0; }
+  .measure { max-width: 38rem; }
+  p { color: var(--ink-dim); margin: 0 0 1rem; }
+
+  /* ---------- top bar ---------- */
+  .topbar {
+    max-width: 74rem;
+    margin: 0 auto;
+    padding: 1.5rem 1.5rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .wordmark {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--ink);
+  }
+  .wordmark .tm { font-size: 0.6rem; color: var(--ink-faint); font-weight: 400; align-self: flex-start; margin-top: 0.2rem; }
+  #lang-toggle {
+    display: flex;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    overflow: hidden;
+    font-size: 0.78rem;
+  }
+  #lang-toggle button {
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: var(--ink-faint);
+    padding: 0.35rem 0.8rem;
+    font: inherit;
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.15s ease, background 0.15s ease;
+  }
+  #lang-toggle button:hover:not([aria-pressed="true"]) { color: var(--ink); }
+  #lang-toggle button[aria-pressed="true"] { background: var(--panel); color: var(--glow); }
+
+  /* ---------- hero ---------- */
+  .hero {
+    padding: 3.5rem 0 4.5rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 15rem;
+    gap: 2.5rem;
+    align-items: center;
+  }
+  .hero h1 {
+    font-size: clamp(2.4rem, 5.6vw, 3.6rem);
+    font-weight: 600;
+    line-height: 1.06;
+    margin: 0 0 1.1rem;
+    color: var(--ink);
+  }
+  .hero .tagline {
+    font-size: 1.15rem;
+    max-width: 34rem;
+    color: var(--ink-dim);
+  }
+  .hero .tagline strong { color: var(--ink); font-weight: 600; }
+  .hero-actions {
+    margin-top: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+  }
+  .btn {
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 0.75rem 1.3rem;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: transform 0.12s ease, opacity 0.12s ease;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: var(--glow); color: #05262e; }
+  .btn-primary:hover { opacity: 0.9; }
+  .btn-quiet { color: var(--ink); border: 1px solid var(--line); }
+  .btn-quiet:hover { border-color: var(--ink-faint); }
+
+  .hero-hand {
+    justify-self: center;
+    width: 11rem;
+    height: auto;
+    filter:
+      drop-shadow(0 0 6px #5fe8ffaa)
+      drop-shadow(0 0 26px #22c3ff77)
+      drop-shadow(0 0 60px #0090ff44);
+    animation: pulse 3.2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { filter: drop-shadow(0 0 6px #5fe8ffaa) drop-shadow(0 0 22px #22c3ff66) drop-shadow(0 0 48px #0090ff33); }
+    50% { filter: drop-shadow(0 0 9px #5fe8ffdd) drop-shadow(0 0 34px #22c3ff99) drop-shadow(0 0 72px #0090ff55); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-hand { animation: none; }
+  }
+
+  /* ---------- install section ---------- */
+  .install { border-top: 1px solid var(--line); }
+  .install-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 2.5rem; margin-top: 1.5rem; }
+  .install h3 { margin: 0 0 0.4rem; }
+  .install-cmd { background: rgba(127,127,127,0.12); border: 1px solid var(--line); border-radius: 10px; padding: 0.9rem 1rem; font-size: 0.85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .install-perms { margin-top: 1.5rem; color: var(--ink-faint); font-size: 0.92rem; }
+  @media (max-width: 760px) { .install-grid { grid-template-columns: 1fr; } }
+
+  /* ---------- section heading pattern ---------- */
+  .section-head { display: flex; align-items: baseline; gap: 0.9rem; margin-bottom: 0.6rem; }
+  .section-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--glow); flex: none; box-shadow: 0 0 8px var(--glow); }
+  .section-dot.guide { background: var(--guide); box-shadow: 0 0 8px var(--guide); }
+  .section-head h2 { font-size: 1.7rem; font-weight: 600; margin: 0; color: var(--ink); }
+
+  /* ---------- demo video ---------- */
+  .demo { border-top: 1px solid var(--line); }
+  .demo-video { display: block; width: 100%; max-width: 960px; margin: 1.5rem auto 0; aspect-ratio: 16 / 9; border-radius: 14px; border: 2px solid rgba(94, 232, 255, 0.55); box-shadow: 0 0 40px rgba(94, 232, 255, 0.15); background: #0a0e14; }
+
+  /* ---------- teach section ---------- */
+  .teach { border-top: 1px solid var(--line); }
+  .teach-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 3rem;
+    align-items: start;
+    margin-top: 2rem;
+  }
+  .teach-copy p { max-width: 30rem; }
+  .teach-modes { list-style: none; margin: 1.75rem 0 0; padding: 0; }
+  .teach-modes li {
+    display: flex;
+    gap: 0.9rem;
+    padding: 0.9rem 0;
+    border-top: 1px solid var(--line);
+  }
+  .teach-modes li:first-child { border-top: none; }
+  .mode-mark { width: 0.55rem; padding-top: 0.45rem; flex: none; }
+  .mode-mark span { display: block; width: 8px; height: 8px; border-radius: 50%; background: var(--glow); box-shadow: 0 0 8px var(--glow); }
+  .teach-modes li.guide .mode-mark span { background: var(--guide); box-shadow: 0 0 8px var(--guide); }
+  .teach-modes strong { color: var(--ink); font-family: "Space Grotesk", sans-serif; font-weight: 600; font-size: 1rem; }
+  .teach-modes p { margin: 0.2rem 0 0; font-size: 0.95rem; }
+
+  /* illustrated mock panel */
+  .mock {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .mock-bar {
+    display: flex;
+    gap: 0.4rem;
+    padding: 0.7rem 0.9rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .mock-bar span { width: 8px; height: 8px; border-radius: 50%; background: var(--line); }
+  .mock-body { padding: 1.4rem 1.4rem 1.6rem; }
+  .mock-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #0c1117;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 0.7rem 0.9rem;
+    margin-bottom: 0.7rem;
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 0.85rem;
+    color: var(--ink-faint);
+  }
+  .mock-row.target {
+    color: #06262e;
+    background: var(--glow);
+    border-color: var(--glow);
+    box-shadow: 0 0 0 3px var(--glow-soft), 0 0 24px -6px var(--glow);
+    font-weight: 600;
+  }
+  .mock-row.target.guide {
+    color: #3a2405;
+    background: var(--guide);
+    border-color: var(--guide);
+    box-shadow: 0 0 0 3px var(--guide-soft), 0 0 24px -6px var(--guide);
+  }
+  .mock-caption {
+    margin-top: 1.1rem;
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 0.85rem;
+    color: var(--ink-dim);
+    padding-left: 0.9rem;
+    border-left: 2px solid var(--glow);
+  }
+  .mock-caption.guide { border-left-color: var(--guide); }
+  .mock-toggle { display: flex; gap: 0.4rem; padding: 0.9rem 1.4rem 0; }
+  .mock-toggle button {
+    appearance: none;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--ink-faint);
+    font: inherit;
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 0.78rem;
+    font-weight: 500;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .mock-toggle button[aria-pressed="true"] { border-color: var(--glow); color: var(--glow); }
+  .mock-toggle button[aria-pressed="true"].guide { border-color: var(--guide); color: var(--guide); }
+
+  /* ---------- capabilities ---------- */
+  .capabilities { border-top: 1px solid var(--line); }
+  .cap-list { margin-top: 2rem; }
+  .cap-row {
+    display: grid;
+    grid-template-columns: 13rem minmax(0, 1fr);
+    gap: 1.5rem;
+    padding: 1.3rem 0;
+    border-top: 1px solid var(--line);
+  }
+  .cap-row:last-child { border-bottom: 1px solid var(--line); }
+  .cap-row h3 { margin: 0; font-size: 1.02rem; font-weight: 600; color: var(--ink); }
+  .cap-row p { margin: 0; max-width: 34rem; }
+
+  /* ---------- privacy strip ---------- */
+  .privacy-strip {
+    border-top: 1px solid var(--line);
+    padding: 2.2rem 0;
+    font-size: 0.95rem;
+    color: var(--ink-dim);
+  }
+  .privacy-strip strong { color: var(--ink); }
+
+  /* ---------- pricing ---------- */
+  .pricing { border-top: 1px solid var(--line); }
+  .pricing-grid {
+    margin-top: 2.25rem;
+    display: grid;
+    grid-template-columns: 0.8fr 1.1fr 1.1fr;
+    gap: 1.6rem;
+    align-items: start;
+  }
+  .plan-free h3, .plan-pro h3 {
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ink-dim);
+    margin: 0 0 0.6rem;
+  }
+  .plan-free .price, .plan-pro .price {
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 600;
+  }
+  .plan-free .price { font-size: 1.6rem; color: var(--ink); }
+  .plan-free ul, .plan-pro ul {
+    list-style: none;
+    margin: 1rem 0 1.4rem;
+    padding: 0;
+    color: var(--ink-dim);
+    font-size: 0.95rem;
+  }
+  .plan-free li, .plan-pro li { padding: 0.3rem 0; }
+  .plan-pro {
+    background: var(--panel);
+    border: 1px solid #2a3542;
+    border-radius: 14px;
+    padding: 2rem 2.2rem;
+    position: relative;
+    box-shadow: 0 0 0 1px var(--glow-soft), 0 30px 60px -30px #000;
+  }
+  .plan-pro .plan-badge {
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--glow);
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+  .plan-pro .price { font-size: 2.4rem; color: var(--ink); }
+  .plan-web .plan-badge { color: var(--guide); }
+  .plan-note { font-size: 0.82rem; color: var(--ink-faint); margin: -0.6rem 0 1.1rem; }
+  .plan-pro .price span { font-size: 1rem; font-weight: 400; color: var(--ink-dim); font-family: "Source Serif 4", serif; }
+  .billing-toggle { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; margin: 0.6rem 0 0.8rem; }
+  .billing-toggle button {
+    appearance: none; border: none; background: transparent; color: var(--ink-faint);
+    padding: 0.3rem 0.75rem; font: inherit; font-family: "Space Grotesk", sans-serif;
+    font-size: 0.78rem; font-weight: 600; cursor: pointer;
+  }
+  .billing-toggle button[aria-pressed="true"] { background: var(--glow-soft); color: var(--glow); }
+
+  main .btn.cta-block { width: 100%; justify-content: center; }
+
+  /* ---------- footer ---------- */
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 2rem 1.5rem 2.5rem;
+    max-width: 74rem;
+    margin: 0 auto;
+    font-size: 0.85rem;
+    color: var(--ink-faint);
+    font-family: "Space Grotesk", sans-serif;
+  }
+  footer a { color: var(--ink-faint); }
+  .footer-logo { height: 1.3em; width: auto; vertical-align: -0.3em; margin-right: 0.4rem; }
+
+  @media (max-width: 760px) {
+    .hero { grid-template-columns: 1fr; text-align: left; }
+    .hero-hand { justify-self: start; width: 6rem; order: -1; }
+    .teach-grid { grid-template-columns: 1fr; }
+    .cap-row { grid-template-columns: 1fr; gap: 0.3rem; }
+    .pricing-grid { grid-template-columns: 1fr; }
+  }
+/* ---------- editions (Claude / DeepSeek) ---------- */
+  .topbar-right { display: flex; align-items: center; gap: 0.6rem; }
+  .edition-toggle {
+    display: flex;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    overflow: hidden;
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 0.78rem;
+    font-weight: 500;
+  }
+  .edition-toggle a { color: var(--ink-faint); text-decoration: none; padding: 0.35rem 0.8rem; transition: color 0.15s ease, background 0.15s ease; }
+  .edition-toggle a:hover:not([aria-current]) { color: var(--ink); }
+  .edition-toggle a[aria-current] { background: var(--panel); color: var(--glow); }
+  .hero-new {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    margin-top: 1.4rem; padding: 0.35rem 0.9rem;
+    border: 1px solid var(--glow-soft); border-radius: 999px;
+    font-family: "Space Grotesk", sans-serif; font-size: 0.85rem;
+    color: var(--ink-dim); text-decoration: none;
+  }
+  .hero-new strong { color: var(--glow); font-weight: 600; }
+  .hero-new:hover { border-color: var(--glow); color: var(--ink); }
+  .editions { border-top: 1px solid var(--line); }
+  .editions-grid { margin-top: 2.25rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.6rem; align-items: stretch; }
+  .edition {
+    background: var(--panel); border: 1px solid #2a3542; border-radius: 14px;
+    padding: 1.8rem 2rem; display: flex; flex-direction: column;
+  }
+  .edition.current { box-shadow: 0 0 0 1px var(--glow-soft), 0 30px 60px -30px #000; }
+  .edition .plan-badge { font-family: "Space Grotesk", sans-serif; font-size: 0.75rem; font-weight: 600; color: var(--glow); margin-bottom: 0.5rem; display: block; }
+  .edition h3 { font-family: "Space Grotesk", sans-serif; font-size: 1.35rem; font-weight: 600; color: var(--ink); margin: 0 0 0.8rem; }
+  .edition ul { list-style: none; margin: 0 0 1.4rem; padding: 0; color: var(--ink-dim); font-size: 0.95rem; flex: 1; }
+  .edition li { padding: 0.3rem 0 0.3rem 1.1rem; position: relative; }
+  .edition li::before { content: ""; position: absolute; left: 0; top: 0.85em; width: 0.4rem; height: 0.4rem; border-radius: 50%; background: var(--glow); }
+  .edition video { width: 100%; border-radius: 10px; border: 1px solid #2a3542; margin-bottom: 1.2rem; background: #000; }
+  .editions-note { margin-top: 1.6rem; color: var(--ink); font-size: 1.02rem; }
+  .editions-note strong { color: var(--glow); }
+  @media (max-width: 760px) {
+    .editions-grid { grid-template-columns: 1fr; }
+    .topbar-right { gap: 0.4rem; }
+  }
+
+  main .btn.cta-block { width: 100%; justify-content: center; }
+
+  
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <a class="wordmark" href="https://manoo.corporacionjamiel.workers.dev/" style="text-decoration:none;color:inherit;display:inline-flex;align-items:center;gap:8px" aria-label="Manoo — portada">
+      <svg class="hand-icon" width="22" height="28" viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="filter: drop-shadow(0 0 4px #5fe8ff99);">
+        <defs>
+          <pattern id="mesh0" width="9" height="9" patternUnits="userSpaceOnUse">
+            <rect width="9" height="9" fill="#04283f" />
+            <path d="M0 0H9M0 0V9" stroke="#3fd6ff" stroke-width="0.7" opacity="0.85" />
+          </pattern>
+        </defs>
+        <g fill="url(#mesh0)" stroke="#5fe8ff" stroke-width="2" stroke-linejoin="round">
+          <rect x="25" y="55" width="50" height="52" rx="20" />
+          <path d="M30,60 L31.5,22 A3.5,3.5 0 0 1 38.5,22 L40,60 Z" />
+          <path d="M42,60 L43.5,12 A3.5,3.5 0 0 1 50.5,12 L52,60 Z" />
+          <path d="M54,60 L55.5,16 A3.5,3.5 0 0 1 62.5,16 L64,60 Z" />
+          <path d="M66,58 L67.3,28 A3.7,3.7 0 0 1 74.7,28 L76,58 Z" />
+          <path d="M12,84 L13.5,52 A4,4 0 0 1 21.5,52 L23,84 Z" transform="rotate(-38 17.5 68)" />
+        </g>
+      </svg>
+      Manoo<span class="tm">™</span>
+    </a>
+            <nav class="edition-toggle" aria-label="Edition / Edición">
+          <a href="https://manoo.corporacionjamiel.workers.dev/claude">Claude</a>
+          <a href="/" aria-current="page">DeepSeek</a>
+        </nav>
+    <div id="lang-toggle" role="group" aria-label="Language / Idioma">
+      <button type="button" data-lang="en">EN</button>
+      <button type="button" data-lang="es">ES</button>
+    </div>
+  </div>
+
+  <main>
+    <section class="hero">
+      <div>
+        <h1 data-i18n="heroTitle">DeepSeek, with hands.</h1>
+        <p class="tagline" data-i18n="tagline">
+          Manoo gives <strong>DeepSeek</strong> hands. Point Claude Code at the
+          DeepSeek API and it can use your computer — on macOS.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" id="hero-pro-cta" href="https://buy.stripe.com/14A28sbPZdLe2xR3Be1oI00" target="_blank" rel="noopener" data-i18n="heroCta">Get Pro</a>
+          <a class="btn btn-quiet" href="#teach" data-i18n="heroSecondary">See how it teaches</a>
+        </div>
+      </div>
+      <svg class="hero-hand" viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <pattern id="mesh1" width="9" height="9" patternUnits="userSpaceOnUse">
+            <rect width="9" height="9" fill="#04283f" />
+            <path d="M0 0H9M0 0V9" stroke="#3fd6ff" stroke-width="0.7" opacity="0.85" />
+          </pattern>
+        </defs>
+        <g fill="url(#mesh1)" stroke="#5fe8ff" stroke-width="2" stroke-linejoin="round">
+          <rect x="25" y="55" width="50" height="52" rx="20" />
+          <path d="M30,60 L31.5,22 A3.5,3.5 0 0 1 38.5,22 L40,60 Z" />
+          <path d="M42,60 L43.5,12 A3.5,3.5 0 0 1 50.5,12 L52,60 Z" />
+          <path d="M54,60 L55.5,16 A3.5,3.5 0 0 1 62.5,16 L64,60 Z" />
+          <path d="M66,58 L67.3,28 A3.7,3.7 0 0 1 74.7,28 L76,58 Z" />
+          <path d="M12,84 L13.5,52 A4,4 0 0 1 21.5,52 L23,84 Z" transform="rotate(-38 17.5 68)" />
+        </g>
+        <g stroke="#5fe8ff" stroke-width="1" stroke-linecap="round" opacity="0.75">
+          <line x1="30.6" y1="44" x2="39.4" y2="44" />
+          <line x1="42.6" y1="39.8" x2="51.4" y2="39.8" />
+          <line x1="54.6" y1="41.5" x2="63.4" y2="41.5" />
+          <line x1="66.6" y1="45.4" x2="75.5" y2="45.4" />
+          <line x1="12.9" y1="64.2" x2="22.1" y2="64.2" transform="rotate(-38 17.5 68)" />
+        </g>
+      </svg>
+    </section>
+
+    <section class="demo" id="demo">
+      <div class="section-head"><span class="section-dot"></span><h2 data-i18n="demoTitle">See it in action</h2></div>
+      <p class="measure" data-i18n="demoIntro">A real recording of Manoo working: in this video Manoo is working: it opens the app, clicks and reads the result while you watch. On DeepSeek the flow is identical — a DeepSeek recording is on the way.</p>
+      <video id="demo-video" class="demo-video" controls playsinline preload="metadata" poster="assets/manoo-deepseek-anuncio-portada.png">
+        <source src="assets/manoo-deepseek-anuncio-horizontal.mp4" type="video/mp4" />
+      </video>
+    </section>
+
+    <section class="teach" id="teach">
+      <div class="section-head"><span class="section-dot"></span><h2 data-i18n="teachTitle">It narrates. It points. It waits when you want to try.</h2></div>
+      <div class="teach-grid">
+        <div class="teach-copy">
+          <p class="measure" data-i18n="teachIntro">
+            You don't need to know DeepSeek well to use Manoo. It
+            explains each move in plain language as it makes it, so watching
+            it work is itself the tutorial — no separate manual to read first.
+          </p>
+          <ul class="teach-modes">
+            <li>
+              <div class="mode-mark"><span></span></div>
+              <div><strong data-i18n="mode1Title">Says what it's doing</strong><p data-i18n="mode1Body">Before every click or keystroke, a short line of why — not just the result.</p></div>
+            </li>
+            <li>
+              <div class="mode-mark"><span></span></div>
+              <div><strong data-i18n="mode2Title">You see everything</strong><p data-i18n="mode2Body">When it opens an app, your chat and that app sit side by side, and a neon hand shows where it's working.</p></div>
+            </li>
+            <li class="guide">
+              <div class="mode-mark"><span></span></div>
+              <div><strong data-i18n="mode3Title">The sensitive part is yours</strong><p data-i18n="mode3Body">It does the tedious steps and points you to the ones only you should do — a password, the Pay or Publish button. Ask it to teach and you click every step yourself.</p></div>
+            </li>
+            <li>
+              <div class="mode-mark"><span></span></div>
+              <div><strong data-i18n="mode4Title">Stops the instant you touch the mouse</strong><p data-i18n="mode4Body">Move your own mouse or keyboard and Manoo halts immediately — you're always one touch away from full control.</p></div>
+            </li>
+          </ul>
+        </div>
+        <div class="mock" aria-hidden="true">
+          <div class="mock-bar"><span></span><span></span><span></span></div>
+          <div class="mock-toggle" role="group" aria-label="Mode preview">
+            <button type="button" data-mock="auto" aria-pressed="true" data-i18n="mockTabAuto">Manoo does it</button>
+            <button type="button" data-mock="guide" aria-pressed="false" class="guide" data-i18n="mockTabGuide">Manoo teaches</button>
+          </div>
+          <div class="mock-body">
+            <div class="mock-row" data-mock="auto" data-i18n="mockCancel">Cancelar</div>
+            <div class="mock-row target" data-mock="auto" style="display:flex;" data-i18n="mockSave">Guardar cambios</div>
+            <div class="mock-row" data-mock="auto" style="display:flex;" data-i18n="mockExport">Exportar…</div>
+            <div class="mock-row" data-mock="guide" style="display:none;" data-i18n="mockCancel">Cancelar</div>
+            <div class="mock-row target guide" data-mock="guide" style="display:none;" data-i18n="mockSave">Guardar cambios</div>
+            <div class="mock-row" data-mock="guide" style="display:none;" data-i18n="mockExport">Exportar…</div>
+            <p class="mock-caption" data-mock="auto" data-i18n="mockCaptionAuto">"Voy a hacer clic en Guardar cambios."</p>
+            <p class="mock-caption guide" data-mock="guide" style="display:none;" data-i18n="mockCaptionGuide">"Ese botón de ahí — Guardar cambios. Dale clic tú."</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="capabilities">
+      <div class="section-head"><span class="section-dot"></span><h2 data-i18n="capTitle">What it can actually do</h2></div>
+      <div class="cap-list">
+        <div class="cap-row"><h3 data-i18n="cap1h">See &amp; act</h3><p data-i18n="cap1p">Takes a screenshot, decides where to click or type, and does it — mouse and keyboard, not a simulated click.</p></div>
+        <div class="cap-row"><h3 data-i18n="cap2h">Find things by name</h3><p data-i18n="cap2p">Ask for "the Submit button" and Manoo can locate it directly (accessibility tree, on macOS) instead of only guessing from pixels.</p></div>
+        <div class="cap-row"><h3 data-i18n="cap3h">Wherever you run DeepSeek</h3><p data-i18n="cap3p">Anything you already use on your Mac — on macOS. Works with what you already have open: a browser, a form, the calculator, a settings panel.</p></div>
+        <div class="cap-row"><h3 data-i18n="cap7h">Just say it</h3><p data-i18n="cap7p">“Open the calculator”, “click Save”, “help me post this”: it opens apps and finds buttons by their name.</p></div>
+        <div class="cap-row"><h3 data-i18n="cap6h">Talks to you, if you want</h3><p data-i18n="cap6p">Turn on its voice and it says each step out loud. A small bar switches its features on and off with one click.</p></div>
+        <div class="cap-row"><h3 data-i18n="cap4h">Human takeover, always on</h3><p data-i18n="cap4p">Touch your mouse or keyboard and it stops immediately. You're never watching it lock you out.</p></div>
+        <div class="cap-row"><h3 data-i18n="cap5h">Pro: a local record</h3><p data-i18n="cap5p">Every action Pro takes is logged on your own machine — nothing uploaded, just a trail you can check.</p></div>
+      </div>
+    </section>
+
+    <section class="privacy-strip">
+      <p data-i18n="privacy">
+        Runs on your computer. Manoo has no server of its own that sees your screen: what it sees goes only to the AI you point it at. <strong>With DeepSeek, your screenshots and text are processed and stored by DeepSeek in China</strong>, under DeepSeek's own privacy policy — read it before using Manoo on anything sensitive. Manoo itself never sends your screen anywhere.
+      </p>
+    </section>
+
+    <section class="pricing">
+      <div class="section-head"><span class="section-dot"></span><h2 data-i18n="pricingTitle">Start free, upgrade when it's paying for itself</h2></div>
+      <div class="pricing-grid">
+        <div class="plan-free">
+          <h3 data-i18n="freeTitle">Free</h3>
+          <div class="price">$0</div>
+          <ul>
+            <li data-i18n="freeLi1">Screenshot, click, type, scroll</li>
+            <li data-i18n="freeLi2">25 actions per session</li>
+            <li data-i18n="freeLi3">Human takeover safety, always on</li>
+          </ul>
+          <a class="btn btn-quiet cta-block" href="#instalar" data-i18n="freeCta">Install free</a>
+        </div>
+        <div class="plan-pro">
+          <h3 data-i18n="proTitle">Pro</h3>
+          <div class="billing-toggle" role="group" aria-label="Billing period">
+            <button type="button" data-billing="year" data-i18n="billingYear">Annual</button>
+            <button type="button" data-billing="month" data-i18n="billingMonth">Monthly</button>
+          </div>
+          <div class="price"><span id="pro-price-amount">$49</span> <span id="pro-price-unit">USD / year</span></div>
+          <ul>
+            <li data-i18n="proLi1">Everything in Free, unlimited actions</li>
+            <li data-i18n="proLi2">Local audit log of every action</li>
+          </ul>
+          <a class="btn btn-primary cta-block" id="pro-cta" href="https://buy.stripe.com/14A28sbPZdLe2xR3Be1oI00" target="_blank" rel="noopener" data-i18n="proCta">Get Pro</a>
+        </div>
+        <div class="plan-pro plan-web">
+          <span class="plan-badge" data-i18n="webBadge">If you also use Claude · claude.ai</span>
+          <h3 data-i18n="webTitle">Pro + Web</h3>
+          <div class="billing-toggle" role="group" aria-label="Billing period">
+            <button type="button" data-billing="year" data-i18n="billingYear">Annual</button>
+            <button type="button" data-billing="month" data-i18n="billingMonth">Monthly</button>
+          </div>
+          <div class="price"><span id="web-price-amount">$79</span> <span id="web-price-unit">USD / year</span></div>
+          <ul>
+            <li data-i18n="webLi1">Everything in Pro</li>
+            <li data-i18n="webLi2">Use Manoo from claude.ai in your browser (Claude only, not DeepSeek)</li>
+            <li data-i18n="webLi3">Every session approved with a click on your computer</li>
+          </ul>
+          <p class="plan-note" data-i18n="webNote">macOS. The web bridge works with claude.ai; for DeepSeek use Claude Code on your computer.</p>
+          <a class="btn btn-primary cta-block" id="web-cta" href="https://buy.stripe.com/5kQeVecU336Ab4nb3G1oI02" target="_blank" rel="noopener" data-i18n="webCta">Get Pro + Web</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="install" id="instalar">
+      <div class="section-head"><span class="section-dot"></span><h2 data-i18n="installTitle">Install Manoo</h2></div>
+      <p data-i18n="installEasyP">The easiest way: the installer checks your computer, installs what's missing, walks you through the permissions and installs Manoo in Claude Code. Paste one line in a terminal, then point Claude Code at DeepSeek (step 2 below):</p>
+      <div class="install-grid">
+        <div>
+          <h3 data-i18n="installEasyMacLin">macOS (Terminal)</h3>
+          <pre class="install-cmd"><code>curl -fsSL <span id="origen-instalar"></span>/instalar.sh | bash</code></pre>
+        </div>
+        <div>
+          <h3 data-i18n="installEasyWin">macOS (Terminal)</h3>
+        </div>
+      </div>
+      <p class="install-perms" data-i18n="installAppP"><strong>1. The Manoo app (no Claude Code needed):</strong> the finished app for DeepSeek — its own window, the on-screen bar, the teaching ring and the voice.</p>
+      <p><a class="btn btn-quiet" href="/descargas/manoo-deepseek-0.1.0.zip" download data-i18n="installAppBtn">Download Manoo for DeepSeek (macOS)</a></p>
+      <p class="install-perms" data-i18n="installHarnessP"><strong>Or use it inside DeepSeek Harness:</strong> install the connector from the plugin market (search «Manoo») and Manoo&rsquo;s tools show up in the chat. Or run:</p>
+      <pre class="install-cmd"><code>dsh plugin --profile web add manoo-manos</code></pre>
+      <p class="install-perms" data-i18n="installManualP">Prefer to do it by hand?</p>
+      <div class="install-grid">
+        <div>
+          <h3 data-i18n="installCodeH">Also possible: inside Claude Code</h3>
+          <p data-i18n="installCodeP">You need Claude Code and Node.js. Run these two commands, then restart Claude Code:</p>
+          <pre class="install-cmd"><code>claude plugin marketplace add https://manoo.corporacionjamiel.workers.dev/marketplace.json
+claude plugin install manoo@manoo-local</code></pre>
+        </div>
+        <div>
+          <h3 data-i18n="installDeepSeekH">2. Point Claude Code at DeepSeek</h3>
+          <p data-i18n="installDeepSeekP">Get a key at platform.deepseek.com, then export these variables in the terminal before running Claude Code. They last only for that terminal:</p>
+          <pre class="install-cmd"><code>export ANTHROPIC_BASE_URL=https://api.deepseek.com/anthropic
+export ANTHROPIC_AUTH_TOKEN=&lt;your DeepSeek API key&gt;
+export ANTHROPIC_MODEL=deepseek-flash[1m]
+export ANTHROPIC_DEFAULT_SONNET_MODEL=deepseek-flash[1m]
+export ANTHROPIC_DEFAULT_HAIKU_MODEL=deepseek-flash</code></pre>
+          <p class="install-perms" data-i18n="installDeepSeekNote">Careful: this way it is <strong>Claude Code</strong> that talks to DeepSeek. If you do not use Claude Code, install the Manoo app (below): it talks to DeepSeek directly and needs no Claude at all.</p>
+        </div>
+      </div>
+      <p class="install-perms" data-i18n="installDeskP2">Prefer the Claude desktop app? Point it at the DeepSeek API in developer mode and install the same Manoo extension. <a class="btn btn-quiet" href="/descargas/manoo-0.1.23.mcpb" download data-i18n="installDeskBtn">Download Manoo for Claude desktop</a></p>
+      <p class="install-perms" data-i18n="installPerms">macOS: allow Accessibility, Screen Recording and Input Monitoring.</p>
+      
+      <p class="install-perms" data-i18n="installAppNote"></p>
+    </section>
+
+      </main>
+
+  <section class="editions" id="ediciones">
+      <div class="section-head"><span class="section-dot"></span><h2 data-i18n="edTitle">Two AIs, one Manoo, one license</h2></div>
+      <p class="measure" data-i18n="edIntro">Use Manoo with the AI you prefer. Same hands, same bar, same voice, the same care with what’s sensitive — and if you buy Pro, it works in both.</p>
+      <div class="editions-grid">
+        <div class="edition current">
+          <span class="plan-badge" data-i18n="edClaudeBadge">You are here</span>
+          <h3 data-i18n="edClaudeTitle">Manoo for Claude</h3>
+          <ul>
+            <li data-i18n="edClaudeLi1">In Claude Code, the Claude desktop app and claude.ai</li>
+            <li data-i18n="edClaudeLi2">Windows, macOS and Linux</li>
+            <li data-i18n="edClaudeLi3">Works with your Claude plan</li>
+            <li data-i18n="edClaudeLi4">What Manoo sees goes only to Claude</li>
+          </ul>
+          <a class="btn btn-quiet cta-block" href="https://manoo.corporacionjamiel.workers.dev/claude" data-i18n="edClaudeCta">Install for Claude</a>
+        </div>
+        <div class="edition">
+          <span class="plan-badge" data-i18n="edDsBadge">New</span>
+          <h3 data-i18n="edDsTitle">Manoo for DeepSeek</h3>
+          <video controls playsinline preload="none" poster="assets/manoo-deepseek-anuncio-portada.png">
+            <source src="assets/manoo-deepseek-anuncio-horizontal.mp4" type="video/mp4" />
+          </video>
+          <ul>
+            <li data-i18n="edDsLi1">Its own Mac app, or inside DeepSeek Harness</li>
+            <li data-i18n="edDsLi2">You pay DeepSeek only for what you use, with your own key</li>
+            <li data-i18n="edDsLi3">Today on macOS</li>
+            <li data-i18n="edDsLi4">What Manoo sees goes to DeepSeek, which processes and stores it in China</li>
+          </ul>
+          <a class="btn btn-primary cta-block" href="#instalar" data-i18n="edDsCta">See Manoo for DeepSeek</a>
+        </div>
+      </div>
+      <p class="editions-note" data-i18n="edNote"><strong>One license, both editions:</strong> buy Pro once and activate it in Manoo for Claude and in Manoo for DeepSeek.</p>
+    </section>
+<footer>
+    <img class="footer-logo" src="assets/corporacion-jamiel-logo.png" alt="Corporación Jamiel" />
+    <span data-i18n="footer">Manoo by Corporación Jamiel<br><a href="/zh.html" hreflang="zh-CN">中文</a> · <span class="legal-note">Manoo no está afiliado a DeepSeek AI ni a Anthropic: son marcas de sus dueños. Manoo is not affiliated with DeepSeek AI or Anthropic: their names are trademarks of their owners.</span></span>
+    &nbsp;·&nbsp;
+    <a href="/terminos.html" id="footer-terms-link" data-i18n="footerTerms">Términos de Servicio</a>
+    &nbsp;·&nbsp;
+    <a href="/privacidad.html" id="footer-privacy-link" data-i18n="footerPrivacy">Aviso de Privacidad</a>
+    <br />
+    <span data-i18n="footerCopyright">© 2026 Jamiel García Velázquez. All rights reserved.</span>
+  </footer>
+
+  <script>
+    // Bilingual copy — kept as one JS dictionary rather than duplicated
+    // markup, so there's exactly one place to edit each string. Defaults
+    // to Spanish if the browser's language is Spanish, English otherwise;
+    // remembers an explicit toggle choice in localStorage (per-visitor,
+    // never sent anywhere) so it sticks across visits.
+    var STRINGS = {
+      heroTitle: { en: 'DeepSeek, with hands.', es: 'DeepSeek, con manos.' },
+      tagline: {
+        en: 'Manoo gives <strong>DeepSeek</strong> hands. Point Claude Code at the DeepSeek API and it can use your computer — on macOS. It does the tedious steps, tells you what it’s doing, and leaves you only what should be yours: a password, the Pay or Publish button.',
+        es: 'Manoo le da manos a <strong>DeepSeek</strong>. Apunta Claude Code a la API de DeepSeek y puede usar tu computadora — en macOS. Hace los pasos tediosos, te dice qué está haciendo y te deja solo lo que te toca: una contraseña, el botón de Pagar o Publicar.'
+      },
+      heroCta: { en: 'Get Pro', es: 'Obtener Pro' },
+      heroSecondary: { en: 'See how it teaches', es: 'Ver cómo enseña' },
+      teachTitle: { en: 'It narrates. It points. It waits when you want to try.', es: 'Narra. Señala. Espera cuando quieres intentarlo tú.' },
+      teachIntro: {
+        en: 'You don’t need to know DeepSeek well to use Manoo. It explains each move in plain language as it makes it, so watching it work is itself the tutorial — no separate manual to read first.',
+        es: 'No necesitas conocer bien DeepSeek para usar Manoo. Explica cada movimiento en lenguaje simple mientras lo hace, así que verlo trabajar es en sí mismo el tutorial — sin manual aparte que leer primero.'
+      },
+      mode1Title: { en: 'Says what it’s doing', es: 'Dice qué está haciendo' },
+      mode1Body: { en: 'Before every click or keystroke, a short line of why — not just the result.', es: 'Antes de cada clic o tecla, una línea corta de por qué — no solo el resultado.' },
+      mode2Title: { en: 'You see everything', es: 'Ves todo lo que hace' },
+      mode2Body: { en: 'When it opens an app, your chat and that app sit side by side, and a neon hand shows where it’s working — you watch it happen, not just read about it afterward.', es: 'Cuando abre una app, tu chat y esa app quedan lado a lado, y una mano neón muestra dónde está trabajando — lo ves pasar, no solo lo lees después.' },
+      mode3Title: { en: 'The sensitive part is yours', es: 'Lo sensible lo das tú' },
+      mode3Body: { en: 'It does the tedious steps and points you to the ones only you should do — a password, the Pay or Publish button. Ask it to teach and you click every step yourself.', es: 'Hace los pasos tediosos y te señala solo los que te tocan a ti — una contraseña, el botón de Pagar o Publicar. Pídele que te enseñe y tú das cada clic.' },
+      mode4Title: { en: 'Stops the instant you touch the mouse', es: 'Se detiene en cuanto tocas el mouse' },
+      mode4Body: { en: 'Move your own mouse or keyboard and Manoo halts immediately — you’re always one touch away from full control.', es: 'Mueve tu propio mouse o teclado y Manoo se detiene de inmediato — siempre estás a un toque de tener el control total.' },
+      mockTabAuto: { en: 'Manoo does it', es: 'Manoo lo hace' },
+      mockTabGuide: { en: 'Manoo teaches', es: 'Manoo enseña' },
+      demoTitle: { en: 'See it in action', es: 'Míralo en acción' },
+      proLiBoth: { en: 'Works in Manoo for Claude and for DeepSeek', es: 'Vale para Manoo en Claude y en DeepSeek' },
+      edTitle: { en: 'Two AIs, one Manoo, one license', es: 'Dos IAs, un Manoo, una sola licencia' },
+      edIntro: { en: 'Use Manoo with the AI you prefer. Same hands, same bar, same voice, the same care with what’s sensitive — and if you buy Pro, it works in both.', es: 'Usa Manoo con la IA que prefieras. Las mismas manos, la misma barra, la misma voz y el mismo cuidado con lo sensible — y si compras Pro, te sirve en las dos.' },
+      edClaudeBadge: { en: 'New', es: 'Nuevo' },
+      edClaudeTitle: { en: 'Manoo for Claude', es: 'Manoo para Claude' },
+      edClaudeCta: { en: 'See Manoo for Claude', es: 'Ver Manoo para Claude' },
+      edDsBadge: { en: 'You are here', es: 'Estás aquí' },
+      edDsTitle: { en: 'Manoo for DeepSeek', es: 'Manoo para DeepSeek' },
+      edDsCta: { en: 'Install for DeepSeek', es: 'Instalar para DeepSeek' },
+      edNote: { en: '<strong>One license, both editions:</strong> buy Pro once and activate it in Manoo for Claude and in Manoo for DeepSeek.', es: '<strong>Una licencia, las dos ediciones:</strong> compra Pro una vez y actívalo en Manoo para Claude y en Manoo para DeepSeek.' },
+
+      edClaudeLi1: { en: 'In Claude Code, the Claude desktop app and claude.ai', es: 'En Claude Code, la app de escritorio de Claude y claude.ai' },
+      edClaudeLi2: { en: 'Windows, macOS and Linux', es: 'Windows, macOS y Linux' },
+      edClaudeLi3: { en: 'Works with your Claude plan', es: 'Funciona con tu plan de Claude' },
+      edClaudeLi4: { en: 'What Manoo sees goes only to Claude', es: 'Lo que Manoo ve solo va a Claude' },
+      edDsLi1: { en: 'Its own Mac app, or inside DeepSeek Harness', es: 'Su propia app para Mac, o dentro de DeepSeek Harness' },
+      edDsLi2: { en: 'You pay DeepSeek only for what you use, with your own key', es: 'A DeepSeek le pagas solo lo que uses, con tu propia llave' },
+      edDsLi3: { en: 'Today on macOS', es: 'Hoy en macOS' },
+      edDsLi4: { en: 'What Manoo sees goes to DeepSeek, which processes and stores it in China', es: 'Lo que Manoo ve va a DeepSeek, que lo procesa y lo guarda en China' },
+
+      demoIntro: { en: 'A real recording: you ask DeepSeek to look up the weather and Manoo does it in front of you, saying every step and pointing at the result with the ring.', es: 'Una grabación real: le pides a DeepSeek que busque el clima y Manoo lo hace delante de ti, diciendo cada paso y señalándote el resultado con el aro.' },
+      mockCancel: { en: 'Cancel', es: 'Cancelar' },
+      mockSave: { en: 'Save changes', es: 'Guardar cambios' },
+      mockExport: { en: 'Export…', es: 'Exportar…' },
+      mockCaptionAuto: { en: '“I’ll click Save changes.”', es: '“Voy a hacer clic en Guardar cambios.”' },
+      mockCaptionGuide: { en: '“That button there — Save changes. You click it.”', es: '“Ese botón de ahí — Guardar cambios. Dale clic tú.”' },
+      capTitle: { en: 'What it can actually do', es: 'Qué puede hacer de verdad' },
+      cap1h: { en: 'See & act', es: 'Ve y actúa' },
+      cap1p: { en: 'Takes a screenshot, decides where to click or type, and does it — mouse and keyboard, not a simulated click.', es: 'Toma una captura, decide dónde hacer clic o escribir, y lo hace — mouse y teclado reales, no un clic simulado.' },
+      cap2h: { en: 'Find things by name', es: 'Encuentra cosas por nombre' },
+      cap2p: { en: 'Ask for "the Submit button" and Manoo finds it directly, on macOS, instead of only guessing from a screenshot.', es: 'Pide "el botón Enviar" y Manoo lo encuentra directo, en macOS, en vez de solo adivinar por una captura.' },
+      cap3h: { en: 'Wherever you run DeepSeek', es: 'Donde corras DeepSeek' },
+      cap3p: { en: 'Anywhere Claude Code runs with the DeepSeek API behind it — on macOS. Works with what you already have open: a browser, a form, the calculator, a settings panel.', es: 'Todo lo que ya usas en tu Mac — en macOS. Funciona con lo que ya tienes abierto: un navegador, un formulario, la calculadora, un panel de ajustes.' },
+      cap6h: { en: 'Talks to you, if you want', es: 'Te habla, si quieres' },
+      cap6p: { en: 'Turn on its voice and it says each step out loud. A small bar on your screen switches voice, the neon hand, split screen, zoom and pause on and off with one click.', es: 'Prende su voz y te dice cada paso en voz alta. Una barrita en tu pantalla prende y apaga la voz, la mano neón, la pantalla dividida, el zoom y la pausa con un clic.' },
+      cap7h: { en: 'Just say it', es: 'Solo díselo' },
+      cap7p: { en: '“Open the calculator”, “click Save”, “help me post this”: it opens apps and finds buttons by their name. In Spanish or English.', es: '“Abre la calculadora”, “da clic en Guardar”, “ayúdame a publicar esto”: abre apps y encuentra botones por su nombre. En español o en inglés.' },
+      cap4h: { en: 'Human takeover, always on', es: 'El humano siempre tiene el control' },
+      cap4p: { en: 'Touch your mouse or keyboard and it stops immediately. You’re never watching it lock you out.', es: 'Toca tu mouse o teclado y se detiene de inmediato. Nunca te deja fuera del control.' },
+      cap5h: { en: 'Pro: a local record', es: 'Pro: un registro local' },
+      cap5p: { en: 'Every action Pro takes is logged on your own machine — nothing uploaded, just a trail you can check.', es: 'Cada acción de Pro queda registrada en tu propia máquina — nada se sube, solo un rastro que puedes revisar.' },
+      privacy: {
+        en: 'Runs on your computer. Manoo has no server of its own that sees your screen: what it sees goes only to the AI you point it at. <strong>With DeepSeek, your screenshots and text are processed and stored by DeepSeek in China</strong>, under DeepSeek’s own privacy policy — read it before using Manoo on anything sensitive. Manoo itself never sends your screen anywhere.',
+        es: 'Corre en tu computadora. Manoo no tiene un servidor propio que vea tu pantalla: lo que ve solo va a la IA que tú elijas. <strong>Con DeepSeek, tus capturas y tu texto los procesa y guarda DeepSeek en China</strong>, bajo la política de privacidad de DeepSeek — léela antes de usar Manoo con algo sensible. Manoo por su cuenta nunca manda tu pantalla a ningún lado.'
+      },
+      pricingTitle: { en: 'Start free, upgrade when it’s paying for itself', es: 'Empieza gratis, mejora cuando ya se esté pagando solo' },
+      freeTitle: { en: 'Free', es: 'Gratis' },
+      freeLi1: { en: 'Screenshot, click, type, scroll', es: 'Captura, clic, escritura, scroll' },
+      freeLi2: { en: '25 actions per session', es: '25 acciones por sesión' },
+      freeLi3: { en: 'Human takeover safety, always on', es: 'Seguridad de control humano, siempre activa' },
+      freeCta: { en: 'Install free', es: 'Instalar gratis' },
+      installTitle: { en: 'Install Manoo', es: 'Instala Manoo' },
+      installEasyP: { en: "The easiest way: the installer checks your computer, installs what's missing, walks you through the permissions and installs Manoo in Claude Code. Paste one line in a terminal, then point Claude Code at DeepSeek (step 2 below):", es: 'Lo más fácil: el instalador revisa tu computadora, instala lo que falte, te guía para dar los permisos e instala Manoo en Claude Code. Pega una línea en una terminal y luego apunta Claude Code a DeepSeek (paso 2 abajo):' },
+      installEasyMacLin: { en: 'macOS (Terminal)', es: 'macOS (Terminal)' },
+      installEasyWin: { en: 'macOS (Terminal)', es: 'macOS (Terminal)' },
+      installManualP: { en: 'Prefer to do it by hand?', es: '¿Prefieres hacerlo a mano?' },
+      installCodeH: { en: 'Also possible: inside Claude Code', es: 'También se puede: dentro de Claude Code' },
+      installCodeP: { en: 'You need <a href="https://claude.com/claude-code" target="_blank" rel="noopener">Claude Code</a> and <a href="https://nodejs.org" target="_blank" rel="noopener">Node.js</a>. Run these two commands, then restart Claude Code:', es: 'Necesitas <a href="https://claude.com/claude-code" target="_blank" rel="noopener">Claude Code</a> y <a href="https://nodejs.org" target="_blank" rel="noopener">Node.js</a>. Ejecuta estos dos comandos y reinicia Claude Code:' },
+      installDeskH: { en: 'In the Claude desktop app', es: 'En la app de escritorio de Claude' },
+      installDeskP: { en: 'Download the extension, then in Claude open Settings → Extensions → Advanced settings → Install extension and choose the file.', es: 'Descarga la extensión y en Claude abre Configuración → Extensiones → Configuración avanzada → Instalar extensión, y elige el archivo.' },
+      installDeepSeekH: { en: '2. Point Claude Code at DeepSeek', es: '2. Apunta Claude Code a DeepSeek' },
+      installDeepSeekP: { en: 'Get a key at platform.deepseek.com, then export these variables in the terminal before running Claude Code. They last only for that terminal:', es: 'Saca una llave en platform.deepseek.com y luego exporta estas variables en la terminal antes de correr Claude Code. Solo duran esa terminal:' },
+      installDeepSeekNote: { en: 'Careful: on this path it is <strong>Claude Code</strong> that talks to DeepSeek. If you do not use Claude Code, install the Manoo app (above): it talks to DeepSeek directly.', es: 'Ojo: en este camino quien habla con DeepSeek es <strong>Claude Code</strong>. Si no usas Claude Code, instala la app de Manoo (arriba): ella habla directo con DeepSeek.' },
+      installDeskP2: { en: 'Prefer the Claude desktop app? Point it at the DeepSeek API in developer mode and install the same Manoo extension.', es: '¿Prefieres la app de escritorio de Claude? Apúntala a la API de DeepSeek en modo desarrollador e instala la misma extensión de Manoo.' },
+      installDeskBtn: { en: 'Download Manoo for Claude desktop', es: 'Descargar Manoo para Claude de escritorio' },
+      installPerms: { en: '<strong>macOS:</strong> allow Accessibility, Screen Recording and Input Monitoring for your terminal or Claude (System Settings → Privacy &amp; Security). ', es: '<strong>macOS:</strong> da permiso de Accesibilidad y Grabación de pantalla a tu terminal o a Claude (Configuración del Sistema → Privacidad y seguridad). ' },
+      proTitle: { en: 'Pro', es: 'Pro' },
+      proLi1: { en: 'Everything in Free, unlimited actions', es: 'Todo lo de Free, acciones ilimitadas' },
+      proLi2: { en: 'Local audit log of every action', es: 'Registro de auditoría local de cada acción' },
+      proCta: { en: 'Get Pro', es: 'Obtener Pro' },
+      billingYear: { en: 'Annual', es: 'Anual' },
+      billingMonth: { en: 'Monthly', es: 'Mensual' },
+      webBadge: { en: 'If you also use Claude · claude.ai', es: 'Si también usas Claude · claude.ai' },
+      installAppP: {
+        en: '<strong>The Manoo app (no Claude Code needed):</strong> the finished app for DeepSeek — its own window, the on-screen bar, the teaching ring and the voice. <strong>macOS only.</strong>',
+        es: '<strong>La app de Manoo (sin Claude Code):</strong> la app terminada para DeepSeek — su propia ventana, la barra en pantalla, el aro para enseñar y la voz. <strong>Solo macOS.</strong>'
+      },
+      installAppBtn: { en: 'Download Manoo for DeepSeek (macOS)', es: 'Bajar Manoo para DeepSeek (macOS)' },
+      installHarnessP: { en: '<strong>Or use it inside DeepSeek Harness:</strong> install the connector from the plugin market (search «Manoo») and Manoo&rsquo;s tools show up in the chat. Or run:', es: '<strong>O úsalo dentro de DeepSeek Harness:</strong> instala el conector desde el mercado de plugins (busca «Manoo») y las herramientas de Manoo aparecen en el chat. O corre:' },
+      installAppNote: {
+        en: 'Needs Node 18+ and three macOS permissions (Accessibility, Screen Recording and Input Monitoring — the last one is the panic button). What Manoo sees goes to DeepSeek: it is processed and stored in China.',
+        es: 'Necesita Node 18+ y tres permisos de macOS (Accesibilidad, Grabación de pantalla y Monitoreo de entrada — el último es el botón de pánico). Lo que Manoo ve va a DeepSeek: se procesa y se guarda en China.'
+      },
+      webTitle: { en: 'Pro + Web', es: 'Pro + Web' },
+      webLi1: { en: 'Everything in Pro', es: 'Todo lo de Pro' },
+      webLi2: { en: 'Use Manoo from claude.ai in your browser (Claude only, not DeepSeek)', es: 'Usa Manoo desde claude.ai en tu navegador (solo Claude, no DeepSeek)' },
+      webLi3: { en: 'Every session approved with a click on your computer', es: 'Cada sesión se aprueba con un clic en tu computadora' },
+      webNote: { en: 'macOS. The web bridge works with claude.ai; for DeepSeek use Claude Code on your computer.', es: 'macOS. El puente web funciona con claude.ai; para DeepSeek usa Claude Code en tu computadora.' },
+      webCta: { en: 'Get Pro + Web', es: 'Obtener Pro + Web' },
+      webTitleSec: { en: 'Use Manoo from claude.ai (Pro + Web)', es: 'Usa Manoo desde claude.ai (Pro + Web)' },
+      webWarn: { en: '<strong>macOS.</strong> The same license also works in Claude Code and the Claude desktop app.', es: '<strong>macOS.</strong> La misma licencia también funciona en Claude Code y en la app de escritorio de Claude.' },
+      webStep1H: { en: '1. Start Manoo on your computer', es: '1. Arranca Manoo en tu computadora' },
+      webStep1P: { en: 'Install the plugin (above), activate your Pro + Web license, then leave this running in a terminal:', es: 'Instala el plugin (arriba), activa tu licencia Pro + Web y deja esto corriendo en una terminal:' },
+      webStep2H: { en: '2. Connect claude.ai', es: '2. Conecta claude.ai' },
+      webStep2P: { en: 'In claude.ai: Settings → Connectors → Add custom connector, and paste:', es: 'En claude.ai: Configuración → Conectores → Agregar conector personalizado, y pega:' },
+      webStep3P: { en: 'Type your license email and the code that appears on your computer. The first time Claude acts in each session, your computer asks you to click “Allow” — nobody can use it without you there.', es: 'Escribe el correo de tu licencia y el código que aparece en tu computadora. La primera vez que Claude actúa en cada sesión, tu computadora te pide un clic en “Permitir”: nadie puede usarla sin que estés ahí.' },
+      proUnitYear: { en: 'USD / year', es: 'USD / año' },
+      proUnitMonth: { en: 'USD / month', es: 'USD / mes' },
+      footer: { en: 'Manoo by Corporación Jamiel', es: 'Manoo por Corporación Jamiel' },
+      footerTerms: { en: 'Terms of Service', es: 'Términos de Servicio' },
+      footerPrivacy: { en: 'Privacy Notice', es: 'Aviso de Privacidad' },
+      footerCopyright: { en: '© 2026 Jamiel García Velázquez. All rights reserved.', es: '© 2026 Jamiel García Velázquez. Todos los derechos reservados.' }
+    };
+
+    // Annual is the discounted option ($49/yr ≈ $4.08/mo) vs paying
+    // monthly ($6/mo ≈ $72/yr) — same tradeoff most subscription tools
+    // use to reward committing upfront, without requiring it.
+    // Real, LIVE-mode Stripe Payment Links (automation/create-payment-link.mjs,
+    // run with the account's real sk_live_ key) — real charges go through
+    // these to the account's actual bank account (Banco Azteca via SPEI).
+    var BILLING = {
+      year: { amount: '$49', checkoutUrl: 'https://buy.stripe.com/14A28sbPZdLe2xR3Be1oI00' },
+      month: { amount: '$6', checkoutUrl: 'https://buy.stripe.com/8x25kE6vF5eI7SbfjW1oI01' }
+    };
+    // Manoo Pro + Web (claude.ai in the browser): $79/year, $9/month.
+    var BILLING_WEB = {
+      year: { amount: '$79', checkoutUrl: 'https://buy.stripe.com/5kQeVecU336Ab4nb3G1oI02' },
+      month: { amount: '$9', checkoutUrl: 'https://buy.stripe.com/3cIfZiaLVgXq1tN1t61oI03' }
+    };
+
+    var currentLang = 'en';
+    var currentBilling = 'year';
+
+    function applyBilling(period) {
+      currentBilling = period;
+      var info = BILLING[period];
+      document.getElementById('pro-price-amount').textContent = info.amount;
+      document.getElementById('pro-price-unit').textContent =
+        STRINGS[period === 'year' ? 'proUnitYear' : 'proUnitMonth'][currentLang];
+      var cta = document.getElementById('pro-cta');
+      cta.href = info.checkoutUrl;
+      cta.target = '_blank';
+      cta.rel = 'noopener';
+      var web = BILLING_WEB[period];
+      document.getElementById('web-price-amount').textContent = web.amount;
+      document.getElementById('web-price-unit').textContent =
+        STRINGS[period === 'year' ? 'proUnitYear' : 'proUnitMonth'][currentLang];
+      document.getElementById('web-cta').href = web.checkoutUrl;
+      var heroCta = document.getElementById('hero-pro-cta');
+      if (heroCta) { heroCta.href = info.checkoutUrl; }
+      document.querySelectorAll('.billing-toggle button').forEach(function (btn) {
+        btn.setAttribute('aria-pressed', String(btn.getAttribute('data-billing') === period));
+      });
+    }
+
+    function applyLang(lang) {
+      currentLang = lang;
+      document.documentElement.lang = lang;
+      document.querySelectorAll('[data-i18n]').forEach(function (el) {
+        var entry = STRINGS[el.getAttribute('data-i18n')];
+        if (entry && entry[lang]) el.innerHTML = entry[lang];
+      });
+            document.querySelectorAll('#lang-toggle button').forEach(function (btn) {
+        btn.setAttribute('aria-pressed', String(btn.getAttribute('data-lang') === lang));
+      });
+      // Legal pages have their own English translations (terminos-en.html /
+      // privacidad-en.html) — route the footer links to whichever matches
+      // the page's current language, so an English-reading visitor doesn't
+      // land on a Spanish-only legal document. Each legal page also has its
+      // own language switch link for anyone who reaches it directly (a
+      // bookmark, a search result) without going through this toggle.
+      var termsLink = document.getElementById('footer-terms-link');
+      var privacyLink = document.getElementById('footer-privacy-link');
+      if (termsLink) termsLink.href = lang === 'en' ? '/terminos-en.html' : '/terminos.html';
+      if (privacyLink) privacyLink.href = lang === 'en' ? '/privacidad-en.html' : '/privacidad.html';
+      applyBilling(currentBilling); // refresh the unit label in the new language
+    }
+
+    (function () {
+      var saved = null;
+      try { saved = localStorage.getItem('manoo-lang'); } catch (e) {}
+      var initial = saved || (navigator.language && navigator.language.slice(0, 2) === 'es' ? 'es' : 'en');
+      applyLang(initial);
+
+      document.querySelectorAll('#lang-toggle button').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var lang = btn.getAttribute('data-lang');
+          applyLang(lang);
+          try { localStorage.setItem('manoo-lang', lang); } catch (e) {}
+        });
+      });
+      document.querySelectorAll('.billing-toggle button').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          applyBilling(btn.getAttribute('data-billing'));
+        });
+      });
+
+      // Auto/teach mode preview toggle in the "teach" mock panel — purely
+      // illustrative (no real screenshot), swaps which row and caption show.
+      document.querySelectorAll('.mock-toggle button').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var mode = btn.getAttribute('data-mock');
+          document.querySelectorAll('.mock-toggle button').forEach(function (b) {
+            b.setAttribute('aria-pressed', String(b === btn));
+          });
+          document.querySelectorAll('[data-mock]').forEach(function (el) {
+            if (el.classList.contains('mock-toggle') || el.tagName === 'BUTTON') return;
+            var show = el.getAttribute('data-mock') === mode;
+            el.style.display = show ? (el.classList.contains('mock-row') ? 'flex' : 'block') : 'none';
+          });
+        });
+      });
+    })();
+  </script>
+<script>var _origen=document.getElementById("origen-instalar");if(_origen)_origen.textContent=location.origin;</script>
+</body>
+</html>
