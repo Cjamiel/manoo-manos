@@ -24,11 +24,17 @@ const t = (es, en, zh) => (IDIOMA === 'zh' ? zh : IDIOMA === 'es' ? es : en);
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 
+/** Cómo se pone una variable de entorno en este sistema (para los mensajes). */
+const EJEMPLO_MANOO_HOME = process.platform === 'win32'
+  ? 'set MANOO_HOME=C:\\ruta\\a\\manoo && node instalar.mjs'
+  : 'MANOO_HOME=/ruta/a/manoo node instalar.mjs';
+
 /** Dónde suele estar la app de Manoo, y dónde se la puede pedir. */
 export const RUTAS = [
   process.env.MANOO_HOME && join(process.env.MANOO_HOME, 'src', 'mcp.mjs'),
   process.env.MANOO_HOME && join(process.env.MANOO_HOME, 'app', 'src', 'mcp.mjs'),
   // Tal como queda al instalar con el instalador (el zip se descomprime plano).
+  // En Windows el instalador la deja en %USERPROFILE%\manoo.
   join(homedir(), 'manoo', 'src', 'mcp.mjs'),
   join(homedir(), 'Documents', 'manoo', 'src', 'mcp.mjs'),
   join(homedir(), 'Applications', 'manoo', 'src', 'mcp.mjs'),
@@ -60,17 +66,17 @@ export default function manooManos() {
       '  1. Bájala en https://manoo-deepseek.corporacionjamiel.workers.dev/ (hay prueba gratis)\n' +
       '  2. Descomprímela en tu carpeta personal como «manoo»\n' +
       '  3. Corre:  node instalar.mjs\n' +
-      '  Si ya la tienes en otro lado:  MANOO_HOME=/ruta/a/manoo node instalar.mjs',
+      '  Si ya la tienes en otro lado:  ' + EJEMPLO_MANOO_HOME,
       'Manoo: I could not find the app.\n' +
       '  1. Download it from https://manoo-deepseek.corporacionjamiel.workers.dev/ (there is a free trial)\n' +
       '  2. Unzip it into your home folder as “manoo”\n' +
       '  3. Run:  node instalar.mjs\n' +
-      '  If it is somewhere else:  MANOO_HOME=/path/to/manoo node instalar.mjs',
+      '  If it is somewhere else:  ' + EJEMPLO_MANOO_HOME,
       'Manoo：我没找到程序。\n' +
       '  1. 从 https://manoo-deepseek.corporacionjamiel.workers.dev/ 下载（有免费额度）\n' +
       '  2. 解压到你的个人文件夹，命名成 manoo\n' +
       '  3. 运行：node instalar.mjs\n' +
-      '  如果装在别处：MANOO_HOME=/你的/manoo node instalar.mjs'
+      '  如果装在别处：' + EJEMPLO_MANOO_HOME
     ));
   }
   return {};
